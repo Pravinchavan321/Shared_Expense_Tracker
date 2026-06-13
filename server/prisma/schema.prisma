@@ -1,0 +1,125 @@
+// Prisma schema for SpreeTail Expense Tracker
+// Uses PostgreSQL as the data source
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// Registered users of the application
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+
+  // Relations: expenses paid, expense splits, group memberships, settlements
+  expensesPaid     Expense[]         @relation("PaidBy")
+  expenseSplits    ExpenseSplit[]
+  groupMemberships GroupMembership[]
+  settlementsPaid  Settlement[]      @relation("SettlementPaidBy")
+  settlementsReceived Settlement[]   @relation("SettlementPaidTo")
+}
+
+/// Groups that hold shared expenses (e.g., "Flat Expenses")
+model Group {
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+
+  // Relations: members, expenses, settlements, import reports
+  memberships   GroupMembership[]
+  expenses      Expense[]
+  settlements   Settlement[]
+  importReports ImportReport[]
+}
+
+/// Tracks when a user joins/leaves a group (supports re-joining)
+model GroupMembership {
+  id       Int       @id @default(autoincrement())
+  userId   Int
+  groupId  Int
+  joinedAt DateTime
+  leftAt   DateTime?
+
+  // Foreign key relations
+  user  User  @relation(fields: [userId], references: [id])
+  group Group @relation(fields: [groupId], references: [id])
+
+  // A user can only have one membership per group per join date
+  @@unique([userId, groupId, joinedAt])
+}
+
+/// An expense paid by one user and split among group members
+model Expense {
+  id             Int      @id @default(autoincrement())
+  groupId        Int
+  description    String
+  amount         Float
+  originalAmount Float
+  currency       String   @default("INR")
+  exchangeRate   Float    @default(1.0)
+  paidById       Int
+  splitType      String
+  date           DateTime
+  notes          String?
+  isSettlement   Boolean  @default(false)
+  importFlag     String?
+  createdAt      DateTime @default(now())
+
+  // Foreign key relations
+  group  Group @relation(fields: [groupId], references: [id])
+  paidBy User  @relation("PaidBy", fields: [paidById], references: [id])
+
+  // How this expense is split across users
+  splits ExpenseSplit[]
+}
+
+/// Individual share of an expense assigned to a user
+model ExpenseSplit {
+  id        Int      @id @default(autoincrement())
+  expenseId Int
+  userId    Int
+  amount    Float
+  createdAt DateTime @default(now())
+
+  // Foreign key relations
+  expense Expense @relation(fields: [expenseId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
+}
+
+/// Records a settlement (debt repayment) between two users
+model Settlement {
+  id       Int      @id @default(autoincrement())
+  groupId  Int
+  paidById Int
+  paidToId Int
+  amount   Float
+  date     DateTime
+  notes    String?
+  createdAt DateTime @default(now())
+
+  // Foreign key relations
+  group  Group @relation(fields: [groupId], references: [id])
+  paidBy User  @relation("SettlementPaidBy", fields: [paidById], references: [id])
+  paidTo User  @relation("SettlementPaidTo", fields: [paidToId], references: [id])
+}
+
+/// Tracks CSV import results including row counts and detected anomalies
+model ImportReport {
+  id           Int      @id @default(autoincrement())
+  groupId      Int
+  fileName     String
+  totalRows    Int
+  importedRows Int
+  anomalies    Json
+  createdAt    DateTime @default(now())
+
+  // Foreign key relation
+  group Group @relation(fields: [groupId], references: [id])
+}
