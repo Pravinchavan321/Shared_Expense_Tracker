@@ -1,0 +1,40 @@
+{
+  "name": "spreetail-expense-server",
+  "version": "1.0.0",
+  "description": "Backend API for SpreeTail shared expense tracker",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "node src/index.js",
+    "start": "node src/index.js",
+    "seed": "npx prisma db seed",
+    "prisma:generate": "npx prisma generate",
+    "prisma:migrate": "npx prisma migrate dev",
+    "prisma:studio": "npx prisma studio",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
+  "keywords": [
+    "expense-tracker",
+    "prisma",
+    "express"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@prisma/client": "^5.22.0",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "multer": "^2.1.1",
+    "papaparse": "^5.5.3",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "prisma": "^5.22.0"
+  }
+}
