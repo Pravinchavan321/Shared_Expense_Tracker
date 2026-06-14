@@ -87,6 +87,9 @@ export default function Dashboard() {
                   </p>
                 </div>
                 <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.05)', paddingTop: '12px', marginTop: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: '13px', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span style={{ fontSize: '16px' }}>👥</span> {group.memberCount || '—'} member{group.memberCount !== 1 ? 's' : ''}
+                  </span>
                   <span style={{ fontSize: '14px', color: 'var(--primary-color)', fontWeight: '600' }}>
                     View Details &rarr;
                   </span>

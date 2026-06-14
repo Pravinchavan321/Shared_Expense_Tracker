@@ -1,6 +1,9 @@
 const Papa = require('papaparse');
 const { parseDate, parseAmount, normalizeName, parseSplitWith, parseSplitDetails } = require('../utils/importHelpers');
 
+/** Fixed USD to INR exchange rate */
+const USD_TO_INR = 83.0;
+
 /**
  * Parses and processes a CSV string, performing anomaly detection on each row.
  */
@@ -62,7 +65,7 @@ async function analyzeCSV(csvText, memberships) {
     // Parse values for further validation
     const parsedAmt = parseAmount(raw.amount);
     const parsedDt = parseDate(raw.date);
-    const exchangeRate = (raw.currency && raw.currency.toUpperCase() === 'USD') ? 83.0 : 1.0;
+    const exchangeRate = (raw.currency && raw.currency.toUpperCase() === 'USD') ? USD_TO_INR : 1.0;
     const finalAmount = Math.round(Math.abs(parsedAmt) * exchangeRate * 100) / 100;
 
     const paidByNormalized = normalizeName(raw.paid_by);

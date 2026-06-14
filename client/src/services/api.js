@@ -123,7 +123,7 @@ export const confirmImport = async (groupId, importData) => {
 };
 
 export const getImportReports = async (groupId) => {
-  const res = await API.get(`/api/groups/${groupId}/import-reports`);
+  const res = await API.get(`/api/groups/${groupId}/import/import-reports`);
   return res.data;
 };
 

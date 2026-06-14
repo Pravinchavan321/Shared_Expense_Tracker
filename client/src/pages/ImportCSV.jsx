@@ -277,6 +277,7 @@ export default function ImportCSV({ groupId, onImportSuccess }) {
                     <th>Date</th>
                     <th>Description</th>
                     <th>Amount</th>
+                    <th>Currency</th>
                     <th>Paid By</th>
                     <th>Split Type</th>
                     <th>Status</th>
@@ -329,6 +330,11 @@ export default function ImportCSV({ groupId, onImportSuccess }) {
                             ₹{row.parsedRow.amount.toFixed(2)}
                             {row.parsedRow.isSettlement && <span style={{ fontSize: '10px', color: 'var(--secondary-color)', display: 'block' }}>(Repayment)</span>}
                             {row.parsedRow.isRefund && <span style={{ fontSize: '10px', color: 'var(--danger-color)', display: 'block' }}>(Refund)</span>}
+                          </td>
+                          <td style={{ borderBottom: 'none' }}>
+                            <span style={{ fontSize: '12px', padding: '2px 6px', borderRadius: '4px', background: (row.originalRow.currency && row.originalRow.currency.toUpperCase() === 'USD') ? 'rgba(108, 99, 255, 0.15)' : 'rgba(255,255,255,0.05)', color: (row.originalRow.currency && row.originalRow.currency.toUpperCase() === 'USD') ? 'var(--primary-color)' : 'var(--text-muted)', fontWeight: '600' }}>
+                              {row.originalRow.currency || 'INR'}
+                            </span>
                           </td>
                           <td style={{ borderBottom: 'none' }}>{row.parsedRow.paid_by || row.originalRow.paid_by || 'Not Specified'}</td>
                           <td style={{ borderBottom: 'none', textTransform: 'capitalize' }}>{row.parsedRow.split_type}</td>

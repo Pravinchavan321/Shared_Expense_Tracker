@@ -479,6 +479,18 @@ export default function GroupDetail() {
                       })}
                     </div>
 
+                    {expenseData.splitType === 'percentage' && (() => {
+                      const total = Object.values(expenseData.splitWith)
+                        .filter(s => s.included)
+                        .reduce((sum, s) => sum + (parseFloat(s.percentage) || 0), 0);
+                      const isValid = Math.abs(total - 100) < 0.01;
+                      return (
+                        <div style={{ fontSize: '13px', padding: '8px 12px', borderRadius: '8px', marginTop: '4px', background: isValid ? 'rgba(0, 212, 170, 0.1)' : 'rgba(255, 107, 107, 0.1)', color: isValid ? 'var(--secondary-color)' : 'var(--danger-color)', fontWeight: '600' }}>
+                          Percentage Total: {total.toFixed(1)}% {isValid ? '✓' : `(must equal 100%)`}
+                        </div>
+                      );
+                    })()}
+
                     <div className="form-group">
                       <label htmlFor="expNotes">Notes</label>
                       <input id="expNotes" type="text" className="form-control" placeholder="Optional notes" value={expenseData.notes} onChange={(e) => setExpenseData({...expenseData, notes: e.target.value})} />
@@ -509,6 +521,9 @@ export default function GroupDetail() {
                           <h4 style={{ fontSize: '16px', fontWeight: '700', color: '#ffffff' }}>{exp.description}</h4>
                           <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
                             Paid by <strong style={{ color: '#ffffff' }}>{exp.paidBy.name}</strong> on {new Date(exp.date).toLocaleDateString()}
+                            <span style={{ marginLeft: '8px', fontSize: '10px', padding: '2px 8px', borderRadius: '10px', background: 'rgba(108, 99, 255, 0.15)', color: 'var(--primary-color)', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                              {exp.splitType}
+                            </span>
                           </p>
                         </div>
 

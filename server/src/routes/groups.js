@@ -76,11 +76,19 @@ router.get('/', authMiddleware, async (req, res) => {
     const memberships = await prisma.groupMembership.findMany({
       where: { userId },
       include: {
-        group: true
+        group: {
+          include: {
+            _count: { select: { memberships: true } }
+          }
+        }
       }
     });
 
-    const groups = memberships.map(m => m.group);
+    // Map to include memberCount alongside group data
+    const groups = memberships.map(m => ({
+      ...m.group,
+      memberCount: m.group._count.memberships
+    }));
 
     return res.status(HTTP_OK).json({ groups });
   } catch (error) {
